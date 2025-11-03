@@ -23,9 +23,8 @@ public class BuzonCuarentena {
             return;
         }
 
-        int tiempoMs = 10000 + random.nextInt(10001);
-        int tiempoSegundos = (tiempoMs + 999) / 1000;
-        mensaje.setTiempoCuarentena(tiempoSegundos);
+        int tiempo = 10000 + random.nextInt(10001);
+        mensaje.setTiempoCuarentena(tiempo);
 
         mensajes.add(mensaje);
         System.out.println("[BuzonCuarentena] Depositado: " + mensaje + " con tiempo " + tiempoSegundos + "s (Total: "
@@ -33,28 +32,35 @@ public class BuzonCuarentena {
         notifyAll();
     }
 
-    public synchronized Mensaje procesarSiguiente() {
+    public synchronized List<Mensaje> procesarMensajes(int deltaTiempo) {
         if (mensajes.isEmpty()) {
-            return null;
+            return new ArrayList<>();
         }
 
-        Mensaje mensaje = mensajes.remove(0);
+        List<Mensaje> listos = new ArrayList<>();
+        for (int i = 0; i < mensajes.size();) {
+            Mensaje mensaje = mensajes.get(i);
 
-        int numAleatorio = 1 + random.nextInt(21);
-        if (numAleatorio % 7 == 0) {
-            System.out.println("[BuzonCuarentena] Mensaje descartado (malicioso): " + mensaje);
-            return null;
+            mensaje.decrementarTiempo(deltaTiempo);
+
+            int numAleatorio = 1 + random.nextInt(21);
+            if (numAleatorio % 7 == 0) {
+                System.out.println("[BuzonCuarentena] Mensaje descartado (malicioso): " + mensaje);
+                mensajes.remove(i);
+                continue;
+            }
+
+            if (mensaje.getTiempoCuarentena() <= 0) {
+                System.out.println("[BuzonCuarentena] Mensaje listo para entrega: " + mensaje);
+                listos.add(mensaje);
+                mensajes.remove(i);
+                continue;
+            }
+
+            i++;
         }
 
-        mensaje.decrementarTiempo(1);
-
-        if (mensaje.getTiempoCuarentena() <= 0) {
-            System.out.println("[BuzonCuarentena] Mensaje listo para entrega: " + mensaje);
-            return mensaje;
-        }
-
-        mensajes.add(mensaje);
-        return null;
+        return listos;
     }
 
     public synchronized boolean isFinRecibido() {
