@@ -22,43 +22,39 @@ public class BuzonCuarentena {
             notifyAll();
             return;
         }
-        int tiempo = 10 + random.nextInt(11);
-        mensaje.setTiempoCuarentena(tiempo);
+
+        int tiempoMs = 10000 + random.nextInt(10001);
+        int tiempoSegundos = (tiempoMs + 999) / 1000;
+        mensaje.setTiempoCuarentena(tiempoSegundos);
 
         mensajes.add(mensaje);
-        System.out.println("[BuzonCuarentena] Depositado: " + mensaje + " con tiempo " + tiempo + " (Total: "
+        System.out.println("[BuzonCuarentena] Depositado: " + mensaje + " con tiempo " + tiempoSegundos + "s (Total: "
                 + mensajes.size() + ")");
         notifyAll();
     }
 
-    public synchronized Mensaje procesarMensaje() {
+    public synchronized Mensaje procesarSiguiente() {
         if (mensajes.isEmpty()) {
             return null;
         }
 
-        // Tomar el PRIMER mensaje de la lista
         Mensaje mensaje = mensajes.remove(0);
 
-        // Decrementar tiempo
-        mensaje.decrementarTiempo();
-
-        // Simular descarte de mensajes maliciosos
         int numAleatorio = 1 + random.nextInt(21);
         if (numAleatorio % 7 == 0) {
             System.out.println("[BuzonCuarentena] Mensaje descartado (malicioso): " + mensaje);
-            return null; // No lo regresamos a la lista ni lo enviamos a entrega
+            return null;
         }
 
-        // Si el tiempo llegó a 0, está listo para entrega
+        mensaje.decrementarTiempo(1);
+
         if (mensaje.getTiempoCuarentena() <= 0) {
             System.out.println("[BuzonCuarentena] Mensaje listo para entrega: " + mensaje);
-            return mensaje; // No lo regresamos a la lista
+            return mensaje;
         }
 
-        // Si todavía tiene tiempo, regresarlo al FINAL de la lista
         mensajes.add(mensaje);
-
-        return null; // No hay mensaje listo aún
+        return null;
     }
 
     public synchronized boolean isFinRecibido() {

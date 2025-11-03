@@ -44,9 +44,9 @@ public class Mensaje {
         this.tiempoCuarentena = tiempo;
     }
 
-    public void decrementarTiempo() {
+    public void decrementarTiempo(int delta) {
         if (tiempoCuarentena > 0) {
-            tiempoCuarentena--;
+            tiempoCuarentena = Math.max(0, tiempoCuarentena - delta);
         }
     }
 

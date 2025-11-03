@@ -26,40 +26,48 @@ public class FiltroSpam extends Thread {
         while (true) {
             Mensaje mensaje = buzonEntrada.extraer();
 
+            if (mensaje == null) {
+                System.out.println("[Filtro-" + id + "] Buzón de entrada cerrado. Terminando...");
+                break;
+            }
+
             if (mensaje.getTipo() == Mensaje.Tipo.INICIO) {
-                System.out.println();
+                System.out.println("[Filtro-" + id + "] Mensaje INICIO recibido");
                 continue;
             }
 
             if (mensaje.getTipo() == Mensaje.Tipo.FIN) {
+                boolean esUltimo = false;
                 synchronized (lock) {
                     clientesFinalizados++;
-                    System.out.println();
+                    System.out.println("[Filtro-" + id + "] Mensaje FIN recibido (" + clientesFinalizados + "/"
+                            + numClientes + ")");
 
                     if (clientesFinalizados == numClientes && !finEnviado) {
-                        esperarProcesamiento();
-                        System.out.println();
-                        buzonEntrega.enviarFinAServidores();
-                        buzonCuarentena.depositar(new Mensaje(Mensaje.Tipo.FIN));
+                        esUltimo = true;
+                    }
+                }
+
+                if (esUltimo) {
+                    esperarProcesamiento();
+                    buzonEntrada.cerrar();
+                    buzonEntrega.enviarFinAServidores();
+                    buzonCuarentena.depositar(new Mensaje(Mensaje.Tipo.FIN));
+                    synchronized (lock) {
                         finEnviado = true;
                         lock.notifyAll();
                     }
-                    while (!finEnviado) {
-                        try {
-                            lock.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    System.out.println("[Filtro-" + id + "] Finalizando tras mensaje FIN");
+                    break;
                 }
-                System.out.println();
-                break;
+
+                continue;
             }
             if (mensaje.esSpam()) {
-                System.out.println();
+                System.out.println("[Filtro-" + id + "] SPAM detectado, enviando a cuarentena: " + mensaje);
                 buzonCuarentena.depositar(mensaje);
             } else {
-                System.out.println();
+                System.out.println("[Filtro-" + id + "] Mensaje válido, enviando a entrega: " + mensaje);
                 buzonEntrega.depositar(mensaje);
 
             }
@@ -68,23 +76,20 @@ public class FiltroSpam extends Thread {
     }
 
     private void esperarProcesamiento() {
-        System.out.println();
+        System.out.println("[Filtro-" + id + "] Esperando a que todos los buzones queden vacíos...");
 
-        while (!buzonCuarentena.isEmpty()) {
-            try {
+        try {
+            while (!buzonEntrada.isEmpty() || !buzonCuarentena.isEmpty()) {
                 Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
+
+            while (!buzonEntrega.isEmpty()) {
+                Thread.sleep(100);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
 
-        while (!buzonEntrega.isEmpty()) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        System.out.println();
+        System.out.println("[Filtro-" + id + "] Buzones listos, enviando mensajes de finalización");
     }
 }

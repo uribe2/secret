@@ -4,19 +4,26 @@ import java.util.Queue;
 public class BuzonEntrada {
     private final Queue<Mensaje> mensajes;
     private final int capacidad;
+    private boolean cerrado;
 
     public BuzonEntrada(int capacidad) {
         this.mensajes = new LinkedList<>();
         this.capacidad = capacidad;
+        this.cerrado = false;
     }
 
     public synchronized void depositar(Mensaje mensaje) {
-        while (mensajes.size() == capacidad) {
+        while (!cerrado && mensajes.size() == capacidad) {
             try {
                 wait(); // Espera pasiva
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
+                return;
             }
+        }
+
+        if (cerrado) {
+            return;
         }
 
         mensajes.add(mensaje);
@@ -24,17 +31,22 @@ public class BuzonEntrada {
                 "[BuzonEntrada] Depositado: " + mensaje + " Total: " + mensajes.size() + "/" + capacidad + ")");
 
         // Despertar un filtro de spam
-        notify();
+        notifyAll();
 
     }
 
     public synchronized Mensaje extraer() {
-        while (mensajes.isEmpty()) {
+        while (mensajes.isEmpty() && !cerrado) {
             try {
                 wait(); // Espera pasiva
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
+                return null;
             }
+        }
+
+        if (mensajes.isEmpty()) {
+            return null;
         }
 
         Mensaje mensaje = mensajes.poll();
@@ -42,7 +54,7 @@ public class BuzonEntrada {
                 .println("[BuzonEntrada] Extraido: " + mensaje + " (Total: " + mensajes.size() + "/" + capacidad + ")");
 
         // Despertar un cliente
-        notify();
+        notifyAll();
 
         return mensaje;
     }
@@ -55,4 +67,8 @@ public class BuzonEntrada {
         return mensajes.size();
     }
 
+    public synchronized void cerrar() {
+        cerrado = true;
+        notifyAll();
+    }
 }
