@@ -32,6 +32,10 @@ public class BuzonEntrega {
         if (finEnviado)
             return;
 
+        while (mensajes.size() + numServidores > capacidad) {
+            Thread.yield();
+        }
+
         finEnviado = true;
         System.out.println("[BuzonEntrega] Enviando mensaje FIN a todos los servidores");
 

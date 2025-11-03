@@ -14,11 +14,8 @@ public class ManejadorCuarentena extends Thread {
         System.out.println("[ManejadorCuarentena] Iniciando...");
 
         while (true) {
-            // Procesar UN mensaje de cuarentena
-            Mensaje mensajeListo = buzonCuarentena.procesarMensaje();
-
-            // Si hay un mensaje listo, moverlo al buzón de entrega
-            if (mensajeListo != null) {
+            // Procesar todos los mensajes actualmente en cuarentena
+            for (Mensaje mensajeListo : buzonCuarentena.procesarMensajes(1000)) {
                 System.out.println("[ManejadorCuarentena] Moviendo a entrega: " + mensajeListo);
                 buzonEntrega.depositar(mensajeListo);
             }
@@ -29,11 +26,13 @@ public class ManejadorCuarentena extends Thread {
                 break;
             }
 
-            // Esperar 1 segundo antes de procesar el siguiente mensaje
+            // Esperar 1 segundo antes de procesar el siguiente ciclo
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
+                System.out.println("[ManejadorCuarentena] Interrumpido");
+                break;
             }
         }
 
