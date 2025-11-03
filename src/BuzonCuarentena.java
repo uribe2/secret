@@ -22,7 +22,8 @@ public class BuzonCuarentena {
             notifyAll();
             return;
         }
-        int tiempo = 10 + random.nextInt(11);
+
+        int tiempo = 10000 + random.nextInt(10001);
         mensaje.setTiempoCuarentena(tiempo);
 
         mensajes.add(mensaje);
@@ -31,34 +32,35 @@ public class BuzonCuarentena {
         notifyAll();
     }
 
-    public synchronized Mensaje procesarMensaje() {
+    public synchronized List<Mensaje> procesarMensajes(int deltaTiempo) {
         if (mensajes.isEmpty()) {
-            return null;
+            return new ArrayList<>();
         }
 
-        // Tomar el PRIMER mensaje de la lista
-        Mensaje mensaje = mensajes.remove(0);
+        List<Mensaje> listos = new ArrayList<>();
+        for (int i = 0; i < mensajes.size();) {
+            Mensaje mensaje = mensajes.get(i);
 
-        // Decrementar tiempo
-        mensaje.decrementarTiempo();
+            mensaje.decrementarTiempo(deltaTiempo);
 
-        // Simular descarte de mensajes maliciosos
-        int numAleatorio = 1 + random.nextInt(21);
-        if (numAleatorio % 7 == 0) {
-            System.out.println("[BuzonCuarentena] Mensaje descartado (malicioso): " + mensaje);
-            return null; // No lo regresamos a la lista ni lo enviamos a entrega
+            int numAleatorio = 1 + random.nextInt(21);
+            if (numAleatorio % 7 == 0) {
+                System.out.println("[BuzonCuarentena] Mensaje descartado (malicioso): " + mensaje);
+                mensajes.remove(i);
+                continue;
+            }
+
+            if (mensaje.getTiempoCuarentena() <= 0) {
+                System.out.println("[BuzonCuarentena] Mensaje listo para entrega: " + mensaje);
+                listos.add(mensaje);
+                mensajes.remove(i);
+                continue;
+            }
+
+            i++;
         }
 
-        // Si el tiempo llegó a 0, está listo para entrega
-        if (mensaje.getTiempoCuarentena() <= 0) {
-            System.out.println("[BuzonCuarentena] Mensaje listo para entrega: " + mensaje);
-            return mensaje; // No lo regresamos a la lista
-        }
-
-        // Si todavía tiene tiempo, regresarlo al FINAL de la lista
-        mensajes.add(mensaje);
-
-        return null; // No hay mensaje listo aún
+        return listos;
     }
 
     public synchronized boolean isFinRecibido() {
