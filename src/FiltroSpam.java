@@ -35,7 +35,7 @@ public class FiltroSpam extends Thread {
                 synchronized (lock) {
                     mensajesInicioRecibidos++;
                     System.out.println("[Filtro-" + id + "] Mensaje INICIO recibido (" + mensajesInicioRecibidos + ")");
-                    
+
                     // El primer filtro que recibe un mensaje no-INICIO establece la barrera
                     if (!todosInicioRecibidos && mensajesInicioRecibidos > 0) {
                         // Esperamos hasta tener al menos un INICIO antes de continuar
@@ -48,13 +48,15 @@ public class FiltroSpam extends Thread {
             if (mensaje.getTipo() == Mensaje.Tipo.FIN) {
                 boolean esUltimo = false;
                 synchronized (lock) {
-                    // Establecer barrera: primera vez que vemos un FIN, fijamos el numero de clientes
+                    // Establecer barrera: primera vez que vemos un FIN, fijamos el numero de
+                    // clientes
                     if (!todosInicioRecibidos) {
                         clientesIniciados = mensajesInicioRecibidos;
                         todosInicioRecibidos = true;
-                        System.out.println("[Filtro-" + id + "] BARRERA: Total de clientes detectados = " + clientesIniciados);
+                        System.out.println(
+                                "[Filtro-" + id + "] BARRERA: Total de clientes detectados = " + clientesIniciados);
                     }
-                    
+
                     clientesFinalizados++;
                     System.out.println("[Filtro-" + id + "] Mensaje FIN recibido (" + clientesFinalizados + "/"
                             + clientesIniciados + ")");
