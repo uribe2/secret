@@ -21,7 +21,7 @@ public class Configuracion {
             while ((linea = br.readLine()) != null) {
                 linea = linea.trim();
 
-                // Ignorar líneas vacías y comentarios
+                // Ignorar lineas vacias y comentarios
                 if (linea.isEmpty() || linea.startsWith("#")) {
                     continue;
                 }

@@ -3,19 +3,19 @@ public class FiltroSpam extends Thread {
     private final BuzonEntrada buzonEntrada;
     private final BuzonCuarentena buzonCuarentena;
     private final BuzonEntrega buzonEntrega;
-    private final int numClientes;
 
     private static final Object lock = new Object();
+    private static int clientesIniciados = 0;
+    private static int mensajesInicioRecibidos = 0;
     private static int clientesFinalizados = 0;
+    private static boolean todosInicioRecibidos = false;
     private static boolean finEnviado = false;
 
-    public FiltroSpam(int id, BuzonEntrada buzonEntrada, BuzonCuarentena buzonCuarentena, BuzonEntrega buzonEntrega,
-            int numClientes) {
+    public FiltroSpam(int id, BuzonEntrada buzonEntrada, BuzonCuarentena buzonCuarentena, BuzonEntrega buzonEntrega) {
         this.id = id;
         this.buzonEntrada = buzonEntrada;
         this.buzonCuarentena = buzonCuarentena;
         this.buzonEntrega = buzonEntrega;
-        this.numClientes = numClientes;
         this.setName("Filtro-" + id);
     }
 
@@ -27,23 +27,39 @@ public class FiltroSpam extends Thread {
             Mensaje mensaje = buzonEntrada.extraer();
 
             if (mensaje == null) {
-                System.out.println("[Filtro-" + id + "] Buzón de entrada cerrado. Terminando...");
+                System.out.println("[Filtro-" + id + "] Buzon de entrada cerrado. Terminando...");
                 break;
             }
 
             if (mensaje.getTipo() == Mensaje.Tipo.INICIO) {
-                System.out.println("[Filtro-" + id + "] Mensaje INICIO recibido");
+                synchronized (lock) {
+                    mensajesInicioRecibidos++;
+                    System.out.println("[Filtro-" + id + "] Mensaje INICIO recibido (" + mensajesInicioRecibidos + ")");
+                    
+                    // El primer filtro que recibe un mensaje no-INICIO establece la barrera
+                    if (!todosInicioRecibidos && mensajesInicioRecibidos > 0) {
+                        // Esperamos hasta tener al menos un INICIO antes de continuar
+                        clientesIniciados = mensajesInicioRecibidos;
+                    }
+                }
                 continue;
             }
 
             if (mensaje.getTipo() == Mensaje.Tipo.FIN) {
                 boolean esUltimo = false;
                 synchronized (lock) {
+                    // Establecer barrera: primera vez que vemos un FIN, fijamos el numero de clientes
+                    if (!todosInicioRecibidos) {
+                        clientesIniciados = mensajesInicioRecibidos;
+                        todosInicioRecibidos = true;
+                        System.out.println("[Filtro-" + id + "] BARRERA: Total de clientes detectados = " + clientesIniciados);
+                    }
+                    
                     clientesFinalizados++;
                     System.out.println("[Filtro-" + id + "] Mensaje FIN recibido (" + clientesFinalizados + "/"
-                            + numClientes + ")");
+                            + clientesIniciados + ")");
 
-                    if (clientesFinalizados == numClientes && !finEnviado) {
+                    if (clientesFinalizados == clientesIniciados && !finEnviado) {
                         esUltimo = true;
                     }
                 }
@@ -67,7 +83,7 @@ public class FiltroSpam extends Thread {
                 System.out.println("[Filtro-" + id + "] SPAM detectado, enviando a cuarentena: " + mensaje);
                 buzonCuarentena.depositar(mensaje);
             } else {
-                System.out.println("[Filtro-" + id + "] Mensaje válido, enviando a entrega: " + mensaje);
+                System.out.println("[Filtro-" + id + "] Mensaje valido, enviando a entrega: " + mensaje);
                 buzonEntrega.depositar(mensaje);
 
             }
@@ -76,7 +92,7 @@ public class FiltroSpam extends Thread {
     }
 
     private void esperarProcesamiento() {
-        System.out.println("[Filtro-" + id + "] Esperando a que todos los buzones queden vacíos...");
+        System.out.println("[Filtro-" + id + "] Esperando a que todos los buzones queden vacios...");
 
         try {
             while (!buzonEntrada.isEmpty() || !buzonCuarentena.isEmpty()) {
@@ -90,6 +106,6 @@ public class FiltroSpam extends Thread {
             Thread.currentThread().interrupt();
         }
 
-        System.out.println("[Filtro-" + id + "] Buzones listos, enviando mensajes de finalización");
+        System.out.println("[Filtro-" + id + "] Buzones listos, enviando mensajes de finalizacion");
     }
 }

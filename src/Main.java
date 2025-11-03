@@ -3,13 +3,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Clase principal del sistema de mensajería
+ * Clase principal del sistema de mensajeria
  */
 public class Main {
 
     public static void main(String[] args) {
         try {
-            // Cargar configuración
+            // Cargar configuracion
             Configuracion config = new Configuracion("config.txt");
             System.out.println("=== CONFIGURACION DEL SISTEMA ===");
             System.out.println(config);
@@ -36,8 +36,7 @@ public class Main {
             // Crear y arrancar filtros de spam
             System.out.println("\n=== INICIANDO FILTROS DE SPAM ===");
             for (int i = 1; i <= config.getNumFiltros(); i++) {
-                FiltroSpam filtro = new FiltroSpam(i, buzonEntrada, buzonCuarentena, buzonEntrega,
-                        config.getNumClientes());
+                FiltroSpam filtro = new FiltroSpam(i, buzonEntrada, buzonCuarentena, buzonEntrega);
                 filtros.add(filtro);
                 filtro.start();
             }
@@ -55,7 +54,7 @@ public class Main {
                 servidor.start();
             }
 
-            System.out.println("\n=== SISTEMA EN EJECUCIÓN ===\n");
+            System.out.println("\n=== SISTEMA EN EJECUCION ===\n");
 
             // Esperar a que terminen los clientes
             for (ClienteEmisor cliente : clientes) {
@@ -81,18 +80,17 @@ public class Main {
 
             // Verificar estado final
             System.out.println("\n=== ESTADO FINAL DEL SISTEMA ===");
-            System.out.println("Buzón de Entrada vacío: " + buzonEntrada.isEmpty() + " (Tamaño: "
+            System.out.println("Buzon de Entrada vacio: " + buzonEntrada.isEmpty() + " (Tamano: "
                     + buzonEntrada.getSize() + ")");
-            System.out.println("Buzón de Cuarentena vacío: " + buzonCuarentena.isEmpty() + " (Tamaño: "
+            System.out.println("Buzon de Cuarentena vacio: " + buzonCuarentena.isEmpty() + " (Tamano: "
                     + buzonCuarentena.getSize() + ")");
-            System.out.println("Buzón de Entrega vacío: " + buzonEntrega.isEmpty() + " (Tamaño: "
+            System.out.println("Buzon de Entrega vacio: " + buzonEntrega.isEmpty() + " (Tamano: "
                     + buzonEntrega.getSize() + ")");
-            System.out.println("=================================");
 
-            System.out.println("\n*** SISTEMA FINALIZADO CORRECTAMENTE ***");
+            System.out.println("\n=== SISTEMA FINALIZADO CORRECTAMENTE ===");
 
         } catch (IOException e) {
-            System.err.println("Error al cargar el archivo de configuración: " + e.getMessage());
+            System.err.println("Error al cargar el archivo de configuracion: " + e.getMessage());
             System.exit(1);
         } catch (InterruptedException e) {
             System.err.println("Sistema interrumpido: " + e.getMessage());

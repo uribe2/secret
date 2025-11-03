@@ -59,7 +59,7 @@ public class BuzonEntrega {
         if (mensaje.getTipo() == Mensaje.Tipo.FIN) {
             servidoresFinalizados++;
             System.out.println(
-                    "[BuzonEntrega] Servidor recibió FIN (" + servidoresFinalizados + "/" + numServidores + ")");
+                    "[BuzonEntrega] Servidor recibio FIN (" + servidoresFinalizados + "/" + numServidores + ")");
         } else {
             System.out.println(
                     "[BuzonEntrega] Extraido: " + mensaje + " (Total: " + mensajes.size() + "/" + capacidad + ")");

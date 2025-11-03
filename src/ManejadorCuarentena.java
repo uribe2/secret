@@ -21,7 +21,7 @@ public class ManejadorCuarentena extends Thread {
             }
 
             if (buzonCuarentena.isFinRecibido() && buzonCuarentena.isEmpty()) {
-                System.out.println("[ManejadorCuarentena] Fin recibido y cuarentena vacía. Terminando...");
+                System.out.println("[ManejadorCuarentena] Fin recibido y cuarentena vacia. Terminando...");
                 break;
             }
 

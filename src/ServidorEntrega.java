@@ -15,7 +15,7 @@ public class ServidorEntrega extends Thread {
     @Override
     public void run() {
         try {
-            System.out.println("[Servidor-" + id + "] Iniciando operación desde el arranque...");
+            System.out.println("[Servidor-" + id + "] Iniciando operacion desde el arranque...");
 
             while (true) {
                 Mensaje mensaje = buzonEntrega.extraer();
@@ -25,7 +25,7 @@ public class ServidorEntrega extends Thread {
                     break;
                 }
 
-                // Ignorar mensajes INICIO (no deberían llegar aquí normalmente)
+                // Ignorar mensajes INICIO (no deberian llegar aqui normalmente)
                 if (mensaje.getTipo() == Mensaje.Tipo.INICIO) {
                     continue;
                 }
