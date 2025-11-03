@@ -1,0 +1,184 @@
+=== CONFIGURACION DEL SISTEMA ===
+Configuracion{numClientes=3, numMensajesPorCliente=5, numFiltros=2, numServidores=2, capacidadBuzonEntrada=5, capacidadBuzonEntrega=10}
+=================================
+
+=== INICIANDO CLIENTES EMISORES ===
+
+=== INICIANDO FILTROS DE SPAM ===
+[Cliente-1] Iniciando...
+[Cliente-2] Iniciando...
+[Cliente-3] Iniciando...
+
+=== INICIANDO MANEJADOR DE CUARENTENA ===
+[Filtro-1] Iniciando...
+[Filtro-2] Iniciando...
+
+=== INICIANDO SERVIDORES DE ENTREGA ===
+[ManejadorCuarentena] Iniciando...
+
+=== SISTEMA EN EJECUCIÓN ===
+
+[Servidor-1] Iniciando operación desde el arranque...
+[Servidor-2] Iniciando operación desde el arranque...
+[BuzonEntrada] Depositado: Mensaje[INICIO] Total: 1/5)
+[BuzonEntrada] Extraido: Mensaje[INICIO] (Total: 0/5)
+[BuzonEntrada] Depositado: Mensaje[INICIO] Total: 1/5)
+[Filtro-2] Mensaje INICIO recibido
+[BuzonEntrada] Depositado: Mensaje[INICIO] Total: 2/5)
+[BuzonEntrada] Extraido: Mensaje[INICIO] (Total: 1/5)
+[Filtro-1] Mensaje INICIO recibido
+[BuzonEntrada] Extraido: Mensaje[INICIO] (Total: 0/5)
+[Filtro-1] Mensaje INICIO recibido
+[Cliente-2] Generando: Mensaje[C2-M1, spam=false]
+[Cliente-1] Generando: Mensaje[C1-M1, spam=false]
+[Cliente-3] Generando: Mensaje[C3-M1, spam=false]
+[BuzonEntrada] Depositado: Mensaje[C2-M1, spam=false] Total: 1/5)
+[BuzonEntrada] Extraido: Mensaje[C2-M1, spam=false] (Total: 0/5)
+[BuzonEntrada] Depositado: Mensaje[C3-M1, spam=false] Total: 1/5)
+[Filtro-2] Mensaje válido, enviando a entrega: Mensaje[C2-M1, spam=false]
+[BuzonEntrada] Depositado: Mensaje[C1-M1, spam=false] Total: 2/5)
+[BuzonEntrada] Extraido: Mensaje[C3-M1, spam=false] (Total: 1/5)
+[Filtro-1] Mensaje válido, enviando a entrega: Mensaje[C3-M1, spam=false]
+[BuzonEntrega] Depositado: Mensaje[C2-M1, spam=false] (Total: 1/10)
+[BuzonEntrada] Extraido: Mensaje[C1-M1, spam=false] (Total: 0/5)
+[Filtro-2] Mensaje válido, enviando a entrega: Mensaje[C1-M1, spam=false]
+[BuzonEntrega] Extraido: Mensaje[C2-M1, spam=false] (Total: 0/10)
+[BuzonEntrega] Depositado: Mensaje[C1-M1, spam=false] (Total: 1/10)
+[Servidor-1] Procesando: Mensaje[C2-M1, spam=false]
+[BuzonEntrega] Extraido: Mensaje[C1-M1, spam=false] (Total: 0/10)
+[Servidor-2] Procesando: Mensaje[C1-M1, spam=false]
+[BuzonEntrega] Depositado: Mensaje[C3-M1, spam=false] (Total: 1/10)
+[Cliente-1] Generando: Mensaje[C1-M2, spam=true]
+[BuzonEntrada] Depositado: Mensaje[C1-M2, spam=true] Total: 1/5)
+[BuzonEntrada] Extraido: Mensaje[C1-M2, spam=true] (Total: 0/5)
+[Filtro-2] SPAM detectado, enviando a cuarentena: Mensaje[C1-M2, spam=true]
+[BuzonCuarentena] Depositado: Mensaje[C1-M2, spam=true] con tiempo 12386s (Total: 1)
+[Cliente-2] Generando: Mensaje[C2-M2, spam=true]
+[BuzonEntrada] Depositado: Mensaje[C2-M2, spam=true] Total: 1/5)
+[BuzonEntrada] Extraido: Mensaje[C2-M2, spam=true] (Total: 0/5)
+[Filtro-1] SPAM detectado, enviando a cuarentena: Mensaje[C2-M2, spam=true]
+[BuzonCuarentena] Depositado: Mensaje[C2-M2, spam=true] con tiempo 12728s (Total: 2)
+[Servidor-1] Completado: Mensaje[C2-M1, spam=false]
+[BuzonEntrega] Extraido: Mensaje[C3-M1, spam=false] (Total: 0/10)
+[Servidor-1] Procesando: Mensaje[C3-M1, spam=false]
+[Cliente-1] Generando: Mensaje[C1-M3, spam=false]
+[BuzonEntrada] Depositado: Mensaje[C1-M3, spam=false] Total: 1/5)
+[BuzonEntrada] Extraido: Mensaje[C1-M3, spam=false] (Total: 0/5)
+[Filtro-2] Mensaje válido, enviando a entrega: Mensaje[C1-M3, spam=false]
+[BuzonEntrega] Depositado: Mensaje[C1-M3, spam=false] (Total: 1/10)
+[Cliente-3] Generando: Mensaje[C3-M2, spam=true]
+[BuzonEntrada] Depositado: Mensaje[C3-M2, spam=true] Total: 1/5)
+[BuzonEntrada] Extraido: Mensaje[C3-M2, spam=true] (Total: 0/5)
+[Filtro-1] SPAM detectado, enviando a cuarentena: Mensaje[C3-M2, spam=true]
+[BuzonCuarentena] Depositado: Mensaje[C3-M2, spam=true] con tiempo 11285s (Total: 3)
+[Cliente-2] Generando: Mensaje[C2-M3, spam=false]
+[BuzonEntrada] Depositado: Mensaje[C2-M3, spam=false] Total: 1/5)
+[BuzonEntrada] Extraido: Mensaje[C2-M3, spam=false] (Total: 0/5)
+[Filtro-2] Mensaje válido, enviando a entrega: Mensaje[C2-M3, spam=false]
+[BuzonEntrega] Depositado: Mensaje[C2-M3, spam=false] (Total: 2/10)
+[Cliente-1] Generando: Mensaje[C1-M4, spam=false]
+[BuzonEntrada] Depositado: Mensaje[C1-M4, spam=false] Total: 1/5)
+[BuzonEntrada] Extraido: Mensaje[C1-M4, spam=false] (Total: 0/5)
+[Filtro-1] Mensaje válido, enviando a entrega: Mensaje[C1-M4, spam=false]
+[BuzonEntrega] Depositado: Mensaje[C1-M4, spam=false] (Total: 3/10)
+[Servidor-1] Completado: Mensaje[C3-M1, spam=false]
+[BuzonEntrega] Extraido: Mensaje[C1-M3, spam=false] (Total: 2/10)
+[Servidor-1] Procesando: Mensaje[C1-M3, spam=false]
+[Cliente-3] Generando: Mensaje[C3-M3, spam=true]
+[BuzonEntrada] Depositado: Mensaje[C3-M3, spam=true] Total: 1/5)
+[BuzonEntrada] Extraido: Mensaje[C3-M3, spam=true] (Total: 0/5)
+[Filtro-1] SPAM detectado, enviando a cuarentena: Mensaje[C3-M3, spam=true]
+[BuzonCuarentena] Depositado: Mensaje[C3-M3, spam=true] con tiempo 13364s (Total: 4)
+[Servidor-2] Completado: Mensaje[C1-M1, spam=false]
+[BuzonEntrega] Extraido: Mensaje[C2-M3, spam=false] (Total: 1/10)
+[Servidor-2] Procesando: Mensaje[C2-M3, spam=false]
+[Cliente-2] Generando: Mensaje[C2-M4, spam=true]
+[BuzonEntrada] Depositado: Mensaje[C2-M4, spam=true] Total: 1/5)
+[BuzonEntrada] Extraido: Mensaje[C2-M4, spam=true] (Total: 0/5)
+[Filtro-2] SPAM detectado, enviando a cuarentena: Mensaje[C2-M4, spam=true]
+[BuzonCuarentena] Depositado: Mensaje[C2-M4, spam=true] con tiempo 11505s (Total: 5)
+[Cliente-1] Generando: Mensaje[C1-M5, spam=false]
+[BuzonEntrada] Depositado: Mensaje[C1-M5, spam=false] Total: 1/5)
+[BuzonEntrada] Extraido: Mensaje[C1-M5, spam=false] (Total: 0/5)
+[Filtro-2] Mensaje válido, enviando a entrega: Mensaje[C1-M5, spam=false]
+[BuzonEntrega] Depositado: Mensaje[C1-M5, spam=false] (Total: 2/10)
+[Cliente-2] Generando: Mensaje[C2-M5, spam=true]
+[BuzonEntrada] Depositado: Mensaje[C2-M5, spam=true] Total: 1/5)
+[BuzonEntrada] Extraido: Mensaje[C2-M5, spam=true] (Total: 0/5)
+[Cliente-3] Generando: Mensaje[C3-M4, spam=true]
+[BuzonEntrada] Depositado: Mensaje[C3-M4, spam=true] Total: 1/5)
+[Filtro-2] SPAM detectado, enviando a cuarentena: Mensaje[C2-M5, spam=true]
+[BuzonCuarentena] Depositado: Mensaje[C2-M5, spam=true] con tiempo 19600s (Total: 6)
+[BuzonEntrada] Extraido: Mensaje[C3-M4, spam=true] (Total: 0/5)
+[Filtro-1] SPAM detectado, enviando a cuarentena: Mensaje[C3-M4, spam=true]
+[BuzonCuarentena] Depositado: Mensaje[C3-M4, spam=true] con tiempo 13688s (Total: 7)
+[Cliente-1] Finalizando...
+[BuzonEntrada] Depositado: Mensaje[FIN] Total: 1/5)
+[BuzonEntrada] Extraido: Mensaje[FIN] (Total: 0/5)
+[Servidor-1] Completado: Mensaje[C1-M3, spam=false]
+[BuzonEntrega] Extraido: Mensaje[C1-M4, spam=false] (Total: 1/10)
+[Servidor-1] Procesando: Mensaje[C1-M4, spam=false]
+[Filtro-2] Mensaje FIN recibido (1/3)
+[Cliente-2] Finalizando...
+[BuzonEntrada] Depositado: Mensaje[FIN] Total: 1/5)
+[BuzonEntrada] Extraido: Mensaje[FIN] (Total: 0/5)
+[Filtro-1] Mensaje FIN recibido (2/3)
+[Servidor-2] Completado: Mensaje[C2-M3, spam=false]
+[BuzonEntrega] Extraido: Mensaje[C1-M5, spam=false] (Total: 0/10)
+[Servidor-2] Procesando: Mensaje[C1-M5, spam=false]
+[Cliente-3] Generando: Mensaje[C3-M5, spam=false]
+[BuzonEntrada] Depositado: Mensaje[C3-M5, spam=false] Total: 1/5)
+[BuzonEntrada] Extraido: Mensaje[C3-M5, spam=false] (Total: 0/5)
+[Filtro-1] Mensaje válido, enviando a entrega: Mensaje[C3-M5, spam=false]
+[Servidor-1] Completado: Mensaje[C1-M4, spam=false]
+[BuzonEntrega] Depositado: Mensaje[C3-M5, spam=false] (Total: 1/10)
+[BuzonEntrega] Extraido: Mensaje[C3-M5, spam=false] (Total: 0/10)
+[Servidor-1] Procesando: Mensaje[C3-M5, spam=false]
+[Servidor-2] Completado: Mensaje[C1-M5, spam=false]
+[Cliente-3] Finalizando...
+[BuzonEntrada] Depositado: Mensaje[FIN] Total: 1/5)
+
+=== TODOS LOS CLIENTES HAN TERMINADO ===
+[BuzonEntrada] Extraido: Mensaje[FIN] (Total: 0/5)
+[Filtro-2] Mensaje FIN recibido (3/3)
+[Filtro-2] Esperando a que todos los buzones queden vacíos...
+[Servidor-1] Completado: Mensaje[C3-M5, spam=false]
+[BuzonCuarentena] Mensaje descartado (malicioso): Mensaje[C1-M2, spam=true]
+[BuzonCuarentena] Mensaje descartado (malicioso): Mensaje[C2-M5, spam=true]
+[BuzonCuarentena] Mensaje descartado (malicioso): Mensaje[C3-M4, spam=true]
+[BuzonCuarentena] Mensaje descartado (malicioso): Mensaje[C2-M4, spam=true]
+[BuzonCuarentena] Mensaje descartado (malicioso): Mensaje[C3-M2, spam=true]
+[BuzonCuarentena] Mensaje descartado (malicioso): Mensaje[C3-M3, spam=true]
+[BuzonCuarentena] Mensaje listo para entrega: Mensaje[C2-M2, spam=true]
+[ManejadorCuarentena] Moviendo a entrega: Mensaje[C2-M2, spam=true]
+[BuzonEntrega] Depositado: Mensaje[C2-M2, spam=true] (Total: 1/10)
+[BuzonEntrega] Extraido: Mensaje[C2-M2, spam=true] (Total: 0/10)
+[Servidor-1] Procesando: Mensaje[C2-M2, spam=true]
+[Filtro-2] Buzones listos, enviando mensajes de finalización
+[BuzonEntrega] Enviando mensaje FIN a todos los servidores
+[BuzonCuarentena] Mensaje FIN recibido
+[Filtro-2] Finalizando tras mensaje FIN
+[Filtro-1] Buzón de entrada cerrado. Terminando...
+[BuzonEntrega] Servidor recibió FIN (1/2)
+
+=== TODOS LOS FILTROS HAN TERMINADO ===
+[Servidor-2] Mensaje FIN recibido. Terminando...
+[Servidor-2] Terminado
+[Servidor-1] Completado: Mensaje[C2-M2, spam=true]
+[BuzonEntrega] Servidor recibió FIN (2/2)
+[Servidor-1] Mensaje FIN recibido. Terminando...
+[Servidor-1] Terminado
+[ManejadorCuarentena] Fin recibido y cuarentena vacía. Terminando...
+[ManejadorCuarentena] Terminado
+
+=== MANEJADOR DE CUARENTENA HA TERMINADO ===
+
+=== TODOS LOS SERVIDORES HAN TERMINADO ===
+
+=== ESTADO FINAL DEL SISTEMA ===
+Buzón de Entrada vacío: true (Tamaño: 0)
+Buzón de Cuarentena vacío: true (Tamaño: 0)
+Buzón de Entrega vacío: true (Tamaño: 0)
+=================================
+
+*** SISTEMA FINALIZADO CORRECTAMENTE ***
