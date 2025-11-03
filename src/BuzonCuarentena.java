@@ -27,7 +27,7 @@ public class BuzonCuarentena {
         mensaje.setTiempoCuarentena(tiempo);
 
         mensajes.add(mensaje);
-        System.out.println("[BuzonCuarentena] Depositado: " + mensaje + " con tiempo " + tiempo + " (Total: "
+        System.out.println("[BuzonCuarentena] Depositado: " + mensaje + " con tiempo " + tiempoSegundos + "s (Total: "
                 + mensajes.size() + ")");
         notifyAll();
     }

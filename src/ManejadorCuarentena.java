@@ -20,7 +20,6 @@ public class ManejadorCuarentena extends Thread {
                 buzonEntrega.depositar(mensajeListo);
             }
 
-            // Verificar si debe terminar
             if (buzonCuarentena.isFinRecibido() && buzonCuarentena.isEmpty()) {
                 System.out.println("[ManejadorCuarentena] Fin recibido y cuarentena vacía. Terminando...");
                 break;
