@@ -18,7 +18,7 @@ public class BuzonEntrega {
 
     public synchronized void depositar(Mensaje mensaje) {
         while (mensajes.size() == capacidad) {
-            Thread.yield(); // Espera semi-activa
+            // Espera activa
         }
 
         mensajes.add(mensaje);
@@ -33,7 +33,7 @@ public class BuzonEntrega {
             return;
 
         while (mensajes.size() + numServidores > capacidad) {
-            Thread.yield();
+            // Espera activa
         }
 
         finEnviado = true;
