@@ -5,11 +5,9 @@ public class FiltroSpam extends Thread {
     private final BuzonEntrega buzonEntrega;
 
     private static final Object lock = new Object();
-    private static int clientesIniciados = 0;
-    private static int mensajesInicioRecibidos = 0;
-    private static int clientesFinalizados = 0;
-    private static boolean todosInicioRecibidos = false;
-    private static boolean finEnviado = false;
+    private static int clientesEsperados = 0;
+    private static int clientesTerminados = 0;
+    private static boolean finGlobalEnviado = false;
 
     public FiltroSpam(int id, BuzonEntrada buzonEntrada, BuzonCuarentena buzonCuarentena, BuzonEntrega buzonEntrega) {
         this.id = id;
@@ -27,20 +25,16 @@ public class FiltroSpam extends Thread {
             Mensaje mensaje = buzonEntrada.extraer();
 
             if (mensaje == null) {
-                System.out.println("[Filtro-" + id + "] Buzon de entrada cerrado. Terminando...");
-                break;
+                if (buzonEntrada.isEmpty() && finGlobalEnviado)
+                    break;
+                continue;
             }
 
             if (mensaje.getTipo() == Mensaje.Tipo.INICIO) {
                 synchronized (lock) {
-                    mensajesInicioRecibidos++;
-                    System.out.println("[Filtro-" + id + "] Mensaje INICIO recibido (" + mensajesInicioRecibidos + ")");
-
-                    // El primer filtro que recibe un mensaje no-INICIO establece la barrera
-                    if (!todosInicioRecibidos && mensajesInicioRecibidos > 0) {
-                        // Esperamos hasta tener al menos un INICIO antes de continuar
-                        clientesIniciados = mensajesInicioRecibidos;
-                    }
+                    clientesEsperados++;
+                    System.out.println("[Filtro-" + id + "] Mensaje INICIO recibido. Total clientes detectados: "
+                            + clientesEsperados);
                 }
                 continue;
             }
@@ -48,66 +42,51 @@ public class FiltroSpam extends Thread {
             if (mensaje.getTipo() == Mensaje.Tipo.FIN) {
                 boolean esUltimo = false;
                 synchronized (lock) {
-                    // Establecer barrera: primera vez que vemos un FIN, fijamos el numero de
-                    // clientes
-                    if (!todosInicioRecibidos) {
-                        clientesIniciados = mensajesInicioRecibidos;
-                        todosInicioRecibidos = true;
-                        System.out.println(
-                                "[Filtro-" + id + "] BARRERA: Total de clientes detectados = " + clientesIniciados);
-                    }
-
-                    clientesFinalizados++;
-                    System.out.println("[Filtro-" + id + "] Mensaje FIN recibido (" + clientesFinalizados + "/"
-                            + clientesIniciados + ")");
-
-                    if (clientesFinalizados == clientesIniciados && !finEnviado) {
+                    clientesTerminados++;
+                    System.out.println("[Filtro-" + id + "] Mensaje FIN recibido (" + clientesTerminados + "/"
+                            + clientesEsperados + ")");
+                    if (clientesTerminados == clientesEsperados && !finGlobalEnviado) {
                         esUltimo = true;
+                        finGlobalEnviado = true;
                     }
                 }
 
                 if (esUltimo) {
-                    esperarProcesamiento();
+                    esperarBuzonesVacios();
                     buzonEntrada.cerrar();
                     buzonEntrega.enviarFinAServidores();
                     buzonCuarentena.depositar(new Mensaje(Mensaje.Tipo.FIN));
-                    synchronized (lock) {
-                        finEnviado = true;
-                        lock.notifyAll();
-                    }
-                    System.out.println("[Filtro-" + id + "] Finalizando tras mensaje FIN");
+                    System.out.println("[Filtro-" + id + "] Envio de mensajes FIN completado. Finalizando...");
                     break;
                 }
-
                 continue;
             }
+
+            // Caso: correo normal
             if (mensaje.esSpam()) {
                 System.out.println("[Filtro-" + id + "] SPAM detectado, enviando a cuarentena: " + mensaje);
                 buzonCuarentena.depositar(mensaje);
             } else {
                 System.out.println("[Filtro-" + id + "] Mensaje valido, enviando a entrega: " + mensaje);
                 buzonEntrega.depositar(mensaje);
-
             }
         }
 
+        System.out.println("[Filtro-" + id + "] Terminado.");
     }
 
-    private void esperarProcesamiento() {
-        System.out.println("[Filtro-" + id + "] Esperando a que todos los buzones queden vacios...");
-
+    private void esperarBuzonesVacios() {
+        System.out.println("[Filtro-" + id + "] Esperando a que todos los buzones queden vacíos...");
         try {
             while (!buzonEntrada.isEmpty() || !buzonCuarentena.isEmpty()) {
-                Thread.sleep(100);
+                Thread.sleep(200);
             }
-
             while (!buzonEntrega.isEmpty()) {
-                Thread.sleep(100);
+                Thread.sleep(200);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-
-        System.out.println("[Filtro-" + id + "] Buzones listos, enviando mensajes de finalizacion");
+        System.out.println("[Filtro-" + id + "] Buzones vacíos, listo para finalizar.");
     }
 }

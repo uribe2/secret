@@ -14,20 +14,22 @@ public class ManejadorCuarentena extends Thread {
         System.out.println("[ManejadorCuarentena] Iniciando...");
 
         while (true) {
-            // Procesar todos los mensajes actualmente en cuarentena
+            // Procesar mensajes con espera semiactiva
             for (Mensaje mensajeListo : buzonCuarentena.procesarMensajes(1000)) {
                 System.out.println("[ManejadorCuarentena] Moviendo a entrega: " + mensajeListo);
                 buzonEntrega.depositar(mensajeListo);
             }
 
-            if (buzonCuarentena.isFinRecibido() && buzonCuarentena.isEmpty()) {
-                System.out.println("[ManejadorCuarentena] Fin recibido y cuarentena vacia. Terminando...");
-                break;
+            // Criterio de terminación: FIN recibido y cuarentena vacía
+            synchronized (buzonCuarentena) {
+                if (buzonCuarentena.isFinRecibido() && buzonCuarentena.isEmpty()) {
+                    System.out.println("[ManejadorCuarentena] Fin recibido y cuarentena vacía. Terminando...");
+                    break;
+                }
             }
 
-            // Esperar 1 segundo antes de procesar el siguiente ciclo
             try {
-                Thread.sleep(1000);
+                Thread.sleep(1000); // espera semiactiva
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 System.out.println("[ManejadorCuarentena] Interrumpido");

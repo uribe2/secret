@@ -16,24 +16,36 @@ public class BuzonEntrega {
         this.servidoresFinalizados = 0;
     }
 
+    // Espera semiactiva: si está lleno, el hilo libera CPU y reintenta
     public synchronized void depositar(Mensaje mensaje) {
         while (mensajes.size() == capacidad) {
-            // Espera activa
+            try {
+                wait(50); // libera CPU un momento
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
         }
 
         mensajes.add(mensaje);
         System.out.println(
                 "[BuzonEntrega] Depositado: " + mensaje + " (Total: " + mensajes.size() + "/" + capacidad + ")");
-
         notifyAll();
     }
 
+    // Enviar FIN cuando todo ha sido procesado
     public synchronized void enviarFinAServidores() {
         if (finEnviado)
             return;
 
+        // Espera semiactiva: espera a que haya espacio para todos los mensajes FIN
         while (mensajes.size() + numServidores > capacidad) {
-            // Espera activa
+            try {
+                wait(50);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
         }
 
         finEnviado = true;
@@ -48,9 +60,10 @@ public class BuzonEntrega {
     public synchronized Mensaje extraer() {
         while (mensajes.isEmpty()) {
             try {
-                wait(10);
+                wait(100); // espera pasiva hasta que haya algo
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
+                return null;
             }
         }
 
@@ -64,6 +77,7 @@ public class BuzonEntrega {
             System.out.println(
                     "[BuzonEntrega] Extraido: " + mensaje + " (Total: " + mensajes.size() + "/" + capacidad + ")");
         }
+
         notifyAll();
         return mensaje;
     }
