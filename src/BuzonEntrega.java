@@ -37,24 +37,21 @@ public class BuzonEntrega {
     public synchronized void enviarFinAServidores() {
         if (finEnviado)
             return;
-
-        // Espera semiactiva: espera a que haya espacio para todos los mensajes FIN
-        while (mensajes.size() + numServidores > capacidad) {
-            try {
-                wait(50);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return;
-            }
-        }
-
         finEnviado = true;
         System.out.println("[BuzonEntrega] Enviando mensaje FIN a todos los servidores");
 
         for (int i = 0; i < numServidores; i++) {
+            while (mensajes.size() == capacidad) {
+                try {
+                    wait(50);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
             mensajes.add(new Mensaje(Mensaje.Tipo.FIN));
+            notifyAll();
         }
-        notifyAll();
     }
 
     public synchronized Mensaje extraer() {

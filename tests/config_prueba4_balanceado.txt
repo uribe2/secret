@@ -1,0 +1,6 @@
+numClientes=5
+numMensajesPorCliente=5
+numFiltros=3
+numServidores=3
+capacidadBuzonEntrada=10
+capacidadBuzonEntrega=15
